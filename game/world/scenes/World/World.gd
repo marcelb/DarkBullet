@@ -3,7 +3,7 @@ extends Node2D
 func _ready():
 	VisualServer.set_default_clear_color(Color(0, 0, 0.2, 1) )
 	CurrentWorld.generate()
-	$ScrollingTileMap.setup($Player)
+	$ScrollingTileMap.setup($Player, $Player/Camera2D)
 
 #func _process(delta):
 #	pass
