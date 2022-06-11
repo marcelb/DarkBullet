@@ -24,7 +24,7 @@ func generate() -> void:
 	
 	for x in WIDTH:
 		for y in HEIGHT:
-			world[x][y] = GlobalsMain.rng.randi_range(0,1)
+			world[x][y] = clamp(GlobalsMain.rng.randi_range(-160,1), -1, 1)
 			
 	print("World generating time: ", OS.get_ticks_msec() - time_start)
 	isInitialized = true

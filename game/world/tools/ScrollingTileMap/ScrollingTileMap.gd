@@ -1,5 +1,7 @@
 extends TileMap
 
+const REMOVE_INVISIBLE_TILES = false
+
 const WORLD_WIDTH_OFFSET = CurrentWorld.WIDTH / 2
 const WORLD_HEIGHT_OFFSET = CurrentWorld.HEIGHT / 2
 const WORLD_OFFSET_VECTOR = Vector2(WORLD_WIDTH_OFFSET, WORLD_HEIGHT_OFFSET)
@@ -8,7 +10,7 @@ const VISIBLE_SIZE_VECTOR_TEST_OFFSET = 0
 
 var visibleSizeVectorOffset = Vector2(10, 10)
 
-var player = null
+var player:KinematicBody2D = null
 var camera:Camera2D = null
 var lastPlayerTilePos = null
 
@@ -42,11 +44,12 @@ func _translateToArrayCoords(pos:Vector2):
 
 func _setCellFromArrayData(cell: Vector2):
 	var arrayPos = cell + WORLD_OFFSET_VECTOR
-	if _isOnArrayMap(arrayPos):
+	if _isOnArrayMap(arrayPos) && CurrentWorld.world[arrayPos.x][arrayPos.y] > -1:
 		set_cellv(cell, CurrentWorld.world[arrayPos.x][arrayPos.y])
 		
 func _removeCell(cell: Vector2):
-	set_cellv(cell, -1)
+	if REMOVE_INVISIBLE_TILES:
+		set_cellv(cell, -1)
 	
 func _setRectangle(playerPos: Vector2):
 	for x in range(playerPos.x - visibleSizeVectorOffset.x, playerPos.x + visibleSizeVectorOffset.x):
@@ -54,12 +57,12 @@ func _setRectangle(playerPos: Vector2):
 				_setCellFromArrayData(Vector2(x, y))
 				
 func _setColumn(pos: Vector2):
-		for y in range(pos.y - visibleSizeVectorOffset.y, pos.y + visibleSizeVectorOffset.y):
-				_setCellFromArrayData(Vector2(pos.x, y))
+	for y in range(pos.y - visibleSizeVectorOffset.y, pos.y + visibleSizeVectorOffset.y):
+			_setCellFromArrayData(Vector2(pos.x, y))
 
 func _setRow(pos: Vector2):
-		for x in range(pos.x - visibleSizeVectorOffset.x, pos.x + visibleSizeVectorOffset.x):
-				_setCellFromArrayData(Vector2(x, pos.y))
+	for x in range(pos.x - visibleSizeVectorOffset.x, pos.x + visibleSizeVectorOffset.x):
+			_setCellFromArrayData(Vector2(x, pos.y))
 
 func _removeColumn(pos: Vector2):
 		for y in range(pos.y - visibleSizeVectorOffset.y, pos.y + visibleSizeVectorOffset.y):
