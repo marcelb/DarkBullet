@@ -8,6 +8,34 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Reference",
+"class": "Array2D",
+"language": "GDScript",
+"path": "res://globals/types/Array2D.gd"
+}, {
+"base": "Reference",
+"class": "Door",
+"language": "GDScript",
+"path": "res://globals/models/Door.gd"
+}, {
+"base": "Reference",
+"class": "LinkedRoom",
+"language": "GDScript",
+"path": "res://globals/models/LinkedRoom.gd"
+}, {
+"base": "TileMap",
+"class": "ScrollingTileMap",
+"language": "GDScript",
+"path": "res://game/world/tools/ScrollingTileMap/ScrollingTileMap.gd"
+} ]
+_global_script_class_icons={
+"Array2D": "",
+"Door": "",
+"LinkedRoom": "",
+"ScrollingTileMap": ""
+}
+
 [application]
 
 config/name="DarkBullet"

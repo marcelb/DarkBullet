@@ -6,7 +6,7 @@ onready var camera:Camera2D = $Player/Camera2D
 func _ready():
 	VisualServer.set_default_clear_color(Color(0, 0, 0.2, 1) )
 	CurrentWorld.generate()
-	$ScrollingTileMap.setup(player, camera)
+	$ScrollingTileMap.setup(CurrentWorld.starterRoom, player, camera)
 	$Player/ScrollingGround.setup(player)
 
 #func _process(delta):

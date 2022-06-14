@@ -1,12 +1,12 @@
-extends TileMap
+class_name ScrollingTileMap extends TileMap
 
 const REMOVE_INVISIBLE_TILES = false
-
-const WORLD_WIDTH_OFFSET = CurrentWorld.WIDTH / 2
-const WORLD_HEIGHT_OFFSET = CurrentWorld.HEIGHT / 2
-const WORLD_OFFSET_VECTOR = Vector2(WORLD_WIDTH_OFFSET, WORLD_HEIGHT_OFFSET)
-
 const VISIBLE_SIZE_VECTOR_TEST_OFFSET = 0
+
+var linkedRoom: LinkedRoom
+var worldWidthOffset: int
+var worldHeightOffset: int
+var worldOffsetVector: Vector2
 
 var visibleSizeVectorOffset = Vector2(10, 10)
 
@@ -16,7 +16,7 @@ var lastPlayerTilePos = null
 
 func _ready():
 	get_tree().get_root().connect("size_changed", self, "_onScreenResize")
-	
+
 func _onScreenResize():
 	_recalculateAndDrawScreenBoundaries()
 
@@ -27,25 +27,28 @@ func _recalculateAndDrawScreenBoundaries():
 	clear()
 	_setRectangle(playerTilePosition)
 
-func setup(myPlayer, myCamera):
-	self.player = myPlayer
-	self.camera = myCamera
+func setup(p_linkedRoom: LinkedRoom, p_player, p_camera):
+	linkedRoom = p_linkedRoom
+	worldWidthOffset = p_linkedRoom.width / 2
+	worldHeightOffset = p_linkedRoom.height / 2
+	worldOffsetVector = Vector2(worldWidthOffset, worldHeightOffset)
+	player = p_player
+	camera = p_camera
 	_recalculateAndDrawScreenBoundaries()
 	var playerTilePosition = world_to_map(player.global_position)
-	# print(playerTilePosition-visibleSizeVectorOffset, " to ", playerTilePosition+visibleSizeVectorOffset)
 	_setRectangle(playerTilePosition)
 	lastPlayerTilePos = playerTilePosition
 
 func _isOnArrayMap(tilePos:Vector2):
-	return tilePos.x in range(0, CurrentWorld.WIDTH-1) && tilePos.y in range(0, CurrentWorld.HEIGHT-1)
+	return tilePos.x in range(0, linkedRoom.width-1) && tilePos.y in range(0, linkedRoom.height-1)
 
 func _translateToArrayCoords(pos:Vector2):
-	return Vector2(pos.x - WORLD_WIDTH_OFFSET, pos.y - WORLD_HEIGHT_OFFSET)
+	return Vector2(pos.x - worldWidthOffset, pos.y - worldHeightOffset)
 
 func _setCellFromArrayData(cell: Vector2):
-	var arrayPos = cell + WORLD_OFFSET_VECTOR
-	if _isOnArrayMap(arrayPos) && CurrentWorld.world[arrayPos.x][arrayPos.y] > -1:
-		set_cellv(cell, CurrentWorld.world[arrayPos.x][arrayPos.y])
+	var arrayPos = cell + worldOffsetVector
+	if _isOnArrayMap(arrayPos) && linkedRoom.tiles.get_cellv(arrayPos) > -1:
+		set_cellv(cell, linkedRoom.tiles.get_cellv(arrayPos))
 		
 func _removeCell(cell: Vector2):
 	if REMOVE_INVISIBLE_TILES:
@@ -73,7 +76,7 @@ func _removeRow(pos: Vector2):
 				_removeCell(Vector2(x, pos.y))
 
 func _process(_delta):
-	if player != null:
+	if linkedRoom != null && player != null:
 		var playerTilePosition = world_to_map(player.global_position)
 		if playerTilePosition != lastPlayerTilePos:
 			# print(playerTilePosition-VISIBLE_SIZE_VECTOR_OFFSET, " to ", playerTilePosition+VISIBLE_SIZE_VECTOR_OFFSET)
