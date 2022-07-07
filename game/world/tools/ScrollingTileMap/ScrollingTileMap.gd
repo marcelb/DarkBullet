@@ -18,12 +18,11 @@ func _ready():
 	get_tree().get_root().connect("size_changed", self, "_onScreenResize")
 
 func _onScreenResize():
-	_recalculateAndDrawScreenBoundaries()
+	_recalculateAndDrawScreenBoundaries(world_to_map(player.global_position))
 
-func _recalculateAndDrawScreenBoundaries():
+func _recalculateAndDrawScreenBoundaries(playerTilePosition:Vector2):
 	var viewportRect = camera.get_viewport_rect()
 	visibleSizeVectorOffset = Vector2(ceil(viewportRect.size.x/cell_size.x/2)+1-VISIBLE_SIZE_VECTOR_TEST_OFFSET, ceil(viewportRect.size.y/cell_size.y/2)+1-VISIBLE_SIZE_VECTOR_TEST_OFFSET)
-	var playerTilePosition = world_to_map(player.global_position)
 	clear()
 	_setRectangle(playerTilePosition)
 
@@ -34,21 +33,27 @@ func setup(p_linkedRoom: LinkedRoom, p_player, p_camera):
 	worldOffsetVector = Vector2(worldWidthOffset, worldHeightOffset)
 	player = p_player
 	camera = p_camera
-	_recalculateAndDrawScreenBoundaries()
 	var playerTilePosition = world_to_map(player.global_position)
-	_setRectangle(playerTilePosition)
+	_recalculateAndDrawScreenBoundaries(playerTilePosition)
 	lastPlayerTilePos = playerTilePosition
 
-func _isOnArrayMap(tilePos:Vector2):
-	return tilePos.x in range(0, linkedRoom.width-1) && tilePos.y in range(0, linkedRoom.height-1)
+func translateMapToWorldWithOffset(mapCoord:Vector2) -> Vector2:
+	return map_to_world(_translateToWorldTileCoords(mapCoord))
+	
+func translateWorldToMapWithOffset(worldCoord:Vector2) -> Vector2:
+	return _translateToArrayCoords(world_to_map(worldCoord))
+
+func _translateToWorldTileCoords(pos:Vector2):
+	return pos - worldOffsetVector
 
 func _translateToArrayCoords(pos:Vector2):
-	return Vector2(pos.x - worldWidthOffset, pos.y - worldHeightOffset)
+	return pos + worldOffsetVector
 
 func _setCellFromArrayData(cell: Vector2):
-	var arrayPos = cell + worldOffsetVector
-	if _isOnArrayMap(arrayPos) && linkedRoom.tiles.get_cellv(arrayPos) > -1:
-		set_cellv(cell, linkedRoom.tiles.get_cellv(arrayPos))
+	var arrayPos = _translateToArrayCoords(cell)
+	var tileAtPos = linkedRoom.getTileAtPos(arrayPos)
+	if tileAtPos > TileIds.NOTHING:
+		set_cellv(cell, tileAtPos)
 		
 func _removeCell(cell: Vector2):
 	if REMOVE_INVISIBLE_TILES:
@@ -79,9 +84,6 @@ func _process(_delta):
 	if linkedRoom != null && player != null:
 		var playerTilePosition = world_to_map(player.global_position)
 		if playerTilePosition != lastPlayerTilePos:
-			# print(playerTilePosition-VISIBLE_SIZE_VECTOR_OFFSET, " to ", playerTilePosition+VISIBLE_SIZE_VECTOR_OFFSET)
-			# print(camera.get_camera_screen_center())
-			
 			if (playerTilePosition.x > lastPlayerTilePos.x):
 				_setColumn(playerTilePosition+Vector2(visibleSizeVectorOffset.x-1, 0))
 				_removeColumn(lastPlayerTilePos-Vector2(visibleSizeVectorOffset.x, 0))

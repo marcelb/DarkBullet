@@ -23,14 +23,19 @@ func get_data() -> Array:
 	return data
 
 func has_cell(p_x:int, p_y:int) -> bool:
-	return len(data) > p_x and len(data[p_x]) > p_y
+	return len(data) > p_x and p_x > -1 and len(data[p_x]) > p_y and p_y > -1
 
 func has_cellv(p_pos: Vector2) -> bool:
 	return has_cell(p_pos.x, p_pos.y)
 
-func get_cellv(p_pos: Vector2):
-	assert(has_cellv(p_pos))
-	return data[p_pos.x][p_pos.y]
+func get_cellv(p_pos: Vector2): # -> int or null
+	if has_cellv(p_pos):
+		return data[p_pos.x][p_pos.y]
+	else:
+		return null
+
+func get_cell(p_x:int, p_y:int):
+	return get_cellv(Vector2(p_x, p_y))
 
 func set_cell(p_x:int, p_y:int, p_value):
 	assert(has_cell(p_x, p_y))

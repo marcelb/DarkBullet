@@ -15,31 +15,43 @@ _global_script_classes=[ {
 "path": "res://globals/types/Array2D.gd"
 }, {
 "base": "Reference",
-"class": "Door",
+"class": "LinkedPortal",
 "language": "GDScript",
-"path": "res://globals/models/Door.gd"
+"path": "res://globals/models/LinkedPortal.gd"
 }, {
 "base": "Reference",
 "class": "LinkedRoom",
 "language": "GDScript",
 "path": "res://globals/models/LinkedRoom.gd"
 }, {
+"base": "Node",
+"class": "RoomService",
+"language": "GDScript",
+"path": "res://game/scripts/rooms/RoomService.gd"
+}, {
 "base": "TileMap",
 "class": "ScrollingTileMap",
 "language": "GDScript",
 "path": "res://game/world/tools/ScrollingTileMap/ScrollingTileMap.gd"
+}, {
+"base": "Node",
+"class": "TileIds",
+"language": "GDScript",
+"path": "res://game/world/tools/ScrollingTileMap/TileIds.gd"
 } ]
 _global_script_class_icons={
 "Array2D": "",
-"Door": "",
+"LinkedPortal": "",
 "LinkedRoom": "",
-"ScrollingTileMap": ""
+"RoomService": "",
+"ScrollingTileMap": "",
+"TileIds": ""
 }
 
 [application]
 
 config/name="DarkBullet"
-run/main_scene="res://game/world/scenes/World/World.tscn"
+run/main_scene="res://game/world/scenes/MainGame/MainGame.tscn"
 boot_splash/image="res://assets/art/intro/transparent.png"
 boot_splash/bg_color=Color( 0, 0, 0, 1 )
 config/icon="res://icon.png"
@@ -48,6 +60,7 @@ config/icon="res://icon.png"
 
 GlobalsMain="*res://globals/globals_main.gd"
 CurrentWorld="*res://globals/current_world.gd"
+ErrorHandler="*res://globals/ErrorHandler/ErrorHandler.gd"
 
 [display]
 
