@@ -45,8 +45,10 @@ func changeRoomsThroughPortal(linkedPortal:LinkedPortal):
 
 func setupNewRoom(newRoom:LinkedRoom, entryPortalInNewRoom: LinkedPortal = null):
 	GameState.currentRoom = newRoom
+	scrollingTileMap.setup(newRoom, player, camera)
+	
 	if entryPortalInNewRoom != null:
-		var spawnPosition = entryPortalInNewRoom.getTileMapPosition() + Vector2(1,0)
+		var spawnPosition = entryPortalInNewRoom.getTileMapPosition() + Vector2(2,0)
 		print("spawn = " + str(spawnPosition))
 		var playerAbsoluteSpawnPosition = scrollingTileMap.translateMapToWorldWithOffset(spawnPosition)
 		print("spawn absolute = " + str(playerAbsoluteSpawnPosition))
@@ -54,7 +56,8 @@ func setupNewRoom(newRoom:LinkedRoom, entryPortalInNewRoom: LinkedPortal = null)
 	else:
 		player.global_position = Vector2(0,0)
 	
-	scrollingTileMap.setup(newRoom, player, camera)
+	scrollingTileMap.forceDrawUpdate()
+	
 	removeAllPortals()
 	addPortalsForRoom(newRoom)
 

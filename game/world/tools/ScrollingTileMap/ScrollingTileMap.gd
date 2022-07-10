@@ -26,6 +26,10 @@ func _recalculateAndDrawScreenBoundaries(playerTilePosition:Vector2):
 	clear()
 	_setRectangle(playerTilePosition)
 
+func forceDrawUpdate():
+	var playerTilePosition = world_to_map(player.global_position)
+	_recalculateAndDrawScreenBoundaries(playerTilePosition)
+
 func setup(p_linkedRoom: LinkedRoom, p_player, p_camera):
 	linkedRoom = p_linkedRoom
 	worldWidthOffset = p_linkedRoom.width / 2
@@ -37,20 +41,20 @@ func setup(p_linkedRoom: LinkedRoom, p_player, p_camera):
 	_recalculateAndDrawScreenBoundaries(playerTilePosition)
 	lastPlayerTilePos = playerTilePosition
 
-func translateMapToWorldWithOffset(mapCoord:Vector2) -> Vector2:
-	return map_to_world(_translateToWorldTileCoords(mapCoord))
+func translateMapToWorldWithOffset(arrayCoord:Vector2) -> Vector2:
+	return map_to_world(_translateFromArrayCoordsToTileMapCoords(arrayCoord))
 	
 func translateWorldToMapWithOffset(worldCoord:Vector2) -> Vector2:
-	return _translateToArrayCoords(world_to_map(worldCoord))
+	return _translateFromTileMapCoordToArrayCoords(world_to_map(worldCoord))
 
-func _translateToWorldTileCoords(pos:Vector2):
+func _translateFromArrayCoordsToTileMapCoords(pos:Vector2):
 	return pos - worldOffsetVector
 
-func _translateToArrayCoords(pos:Vector2):
+func _translateFromTileMapCoordToArrayCoords(pos:Vector2):
 	return pos + worldOffsetVector
 
 func _setCellFromArrayData(cell: Vector2):
-	var arrayPos = _translateToArrayCoords(cell)
+	var arrayPos = _translateFromTileMapCoordToArrayCoords(cell)
 	var tileAtPos = linkedRoom.getTileAtPos(arrayPos)
 	if tileAtPos > TileIds.NOTHING:
 		set_cellv(cell, tileAtPos)
