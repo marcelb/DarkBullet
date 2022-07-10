@@ -24,6 +24,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://globals/models/LinkedRoom.gd"
 }, {
+"base": "KinematicBody2D",
+"class": "Player",
+"language": "GDScript",
+"path": "res://game/actors/players/Player/Player.gd"
+}, {
 "base": "Node",
 "class": "RoomService",
 "language": "GDScript",
@@ -43,6 +48,7 @@ _global_script_class_icons={
 "Array2D": "",
 "LinkedPortal": "",
 "LinkedRoom": "",
+"Player": "",
 "RoomService": "",
 "ScrollingTileMap": "",
 "TileIds": ""
@@ -59,7 +65,7 @@ config/icon="res://icon.png"
 [autoload]
 
 GlobalsMain="*res://globals/globals_main.gd"
-CurrentWorld="*res://globals/current_world.gd"
+GameState="*res://globals/game_state.gd"
 ErrorHandler="*res://globals/ErrorHandler/ErrorHandler.gd"
 
 [display]

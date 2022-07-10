@@ -1,28 +1,26 @@
 class_name LinkedPortal extends Reference
 
-var pos:Vector2 # TileMap Position, not WorldCoords
-var linkedRoom:Reference # LinkedRoom actually
+var linkedRoom # LinkedRoom actually
+var position: Vector2 # position of the Room in the linkedRoom
+var destinationPortal # LinkedPortal of the room of the other side
 
-func _init(a_pos:Vector2) -> void:
-	var LinkedRoom = load("res://globals/models/LinkedRoom.gd") # circumventing circular dependency
-	
-	pos = a_pos
-	
-	var size:Vector2 = GlobalsMain.getRandomVector2(
-			GlobalsMain.ROOM_MIN_WIDTH, 
-			GlobalsMain.ROOM_MAX_WIDTH, 
-			GlobalsMain.ROOM_MIN_HEIGHT, 
-			GlobalsMain.ROOM_MAX_HEIGHT)
-	
-	linkedRoom = LinkedRoom.new(size.x, size.y)
+func _init(a_linkedRoom:Reference, a_position:Vector2) -> void:
+	linkedRoom = a_linkedRoom
+	position = a_position
 
-func hasRoom() -> bool:
-	return linkedRoom != null && linkedRoom.isInitialized
+func hasBeenUsed() -> bool:
+	if destinationPortal == null:
+		return false
+	return  true
 
 func getTileMapPosition() -> Vector2:
-	return pos;
+	return position
+	
+func setDestinationPortal(a_linkedPortal):
+	destinationPortal = a_linkedPortal
 
-func generateRoom() -> void:
-	if !hasRoom():
-		linkedRoom.generate()
-		
+func getDestinationPortal():
+	return destinationPortal
+	
+func getDestinationPortalRoomId():
+	return destinationPortal.linkedRoom.roomId
