@@ -6,6 +6,8 @@ onready var RoomService = $Scripts/RoomService
 onready var ScrollingGround = $Player/ScrollingGround
 onready var ScrollingTileMap = $ScrollingTileMap
 onready var PortalsNode = $Portals
+onready var FPS = $HUD/FPS
+onready var Infos = $HUD/Infos
 
 func _ready():
 	VisualServer.set_default_clear_color(Color(0, 0, 0.2, 1))
@@ -14,10 +16,10 @@ func _ready():
 	Player.global_position = Vector2(0,0)
 
 func _on_HUDUpdateTimer_timeout():
-	$CanvasLayer/FPS.text = str(Engine.get_frames_per_second())
+	FPS.text = str(Engine.get_frames_per_second())
 	var playerPos = str(Player.global_position)
 	var playerTile = str(ScrollingTileMap.translateWorldToMapWithOffset(Player.global_position))
 	var amountOfPortals = str(GameState.currentRoom.amountOfPortals())
 	var roomId = str(GameState.currentRoom.roomId)
 	var text = "Pos " + playerPos + "\nTile " + playerTile + "\nPortals " + amountOfPortals + "\nRoomId " + roomId
-	$CanvasLayer/WorldPosition.text = text
+	Infos.text = text

@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://game/world/tools/ScrollingTileMap/ScrollingTileMap.tscn" type="PackedScene" id=1]
-[ext_resource path="res://game/actors/enemies/DefaultEnemy/DefaultEnemy.tscn" type="PackedScene" id=2]
 [ext_resource path="res://game/actors/players/Player/Player.tscn" type="PackedScene" id=3]
 [ext_resource path="res://game/world/tools/ScrollingGround/ScrollingGround.tscn" type="PackedScene" id=4]
 [ext_resource path="res://game/scripts/rooms/RoomService.gd" type="Script" id=5]
@@ -23,27 +22,18 @@ region_filter_clip = true
 [node name="ScrollingTileMap" parent="." instance=ExtResource( 1 )]
 tile_data = PoolIntArray( 0, 1, 0 )
 
-[node name="DefaultEnemy" parent="." instance=ExtResource( 2 )]
-position = Vector2( 213, -182 )
+[node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="DefaultEnemy2" parent="." instance=ExtResource( 2 )]
-position = Vector2( -214, 248 )
-
-[node name="DefaultEnemy3" parent="." instance=ExtResource( 2 )]
-position = Vector2( -223, -177 )
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="HUDUpdateTimer" type="Timer" parent="CanvasLayer"]
+[node name="HUDUpdateTimer" type="Timer" parent="HUD"]
 autostart = true
 
-[node name="FPS" type="Label" parent="CanvasLayer"]
+[node name="FPS" type="Label" parent="HUD"]
 margin_left = 4.0
 margin_top = 3.0
 margin_right = 44.0
 margin_bottom = 17.0
 
-[node name="WorldPosition" type="Label" parent="CanvasLayer"]
+[node name="Infos" type="Label" parent="HUD"]
 margin_left = 4.0
 margin_top = 22.0
 margin_right = 44.0
@@ -56,4 +46,6 @@ script = ExtResource( 5 )
 
 [node name="Portals" type="Node" parent="."]
 
-[connection signal="timeout" from="CanvasLayer/HUDUpdateTimer" to="." method="_on_HUDUpdateTimer_timeout"]
+[node name="Enemies" type="Node" parent="."]
+
+[connection signal="timeout" from="HUD/HUDUpdateTimer" to="." method="_on_HUDUpdateTimer_timeout"]
