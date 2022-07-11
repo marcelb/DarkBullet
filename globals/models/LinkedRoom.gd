@@ -1,7 +1,7 @@
 class_name LinkedRoom extends Reference
 
 const MINIMUM_PORTALS = 1
-const MAX_PORTAL_PLACING_TRIES = 20
+const MAX_PLACING_TRIES = 20
 
 var roomId:int
 var width:int = 0
@@ -27,9 +27,12 @@ func amountOfPortals() -> int:
 func hasPortals() -> bool:
 	return amountOfPortals() > 0
 
-func isPortal(pos: Vector2) -> bool:
+func isPortal(pos_x, pos_y) -> bool:
+	return isPortalv(Vector2(pos_x, pos_y))
+
+func isPortalv(pos: Vector2) -> bool:
 	for portal in portals:
-		if (portal.getTileMapPosition() == pos):
+		if (portal.getMapPosition() == pos):
 			return true
 	return false
 
@@ -85,11 +88,11 @@ func getValidPortalPosition() -> Vector2:
 	var newPortalLocation = GlobalsMain.getRandomVector2(1, width-2, 1, height-2)
 	var tries = 1
 	
-	while(tries < MAX_PORTAL_PLACING_TRIES && (tiles.get_cellv(newPortalLocation) > TileIds.NOTHING or isPortal(newPortalLocation))):
+	while(tries < MAX_PLACING_TRIES && (tiles.get_cellv(newPortalLocation) > TileIds.NOTHING or isPortalv(newPortalLocation))):
 		newPortalLocation = GlobalsMain.getRandomVector2(1, width-2, 1, height-2)
 		tries += 1
-		if (tries >= MAX_PORTAL_PLACING_TRIES):	
-			newPortalLocation = findFirstFreeSlotForPortal()
+		if (tries >= MAX_PLACING_TRIES):	
+			newPortalLocation = findFirstFreeSlot()
 		
 	if (newPortalLocation != null):
 		return newPortalLocation
@@ -97,11 +100,41 @@ func getValidPortalPosition() -> Vector2:
 		ErrorHandler.criticalError("No Portal location feasable for map. Tries: " + str(tries) + " and emergency placing failed as well.")
 		return Vector2(0,0)
 		
-func findFirstFreeSlotForPortal():
+func findFirstFreeSlot():
 	for x in width-2:
 		for y in height-2:
 			var newPortalLocation = Vector2(x,y)
-			if tiles.get_cellv(newPortalLocation) <= TileIds.NOTHING and !isPortal(newPortalLocation):
+			if tiles.get_cellv(newPortalLocation) <= TileIds.NOTHING and !isPortalv(newPortalLocation):
 				return newPortalLocation
 	return null
+	
+# TODO this is broken shit:
+func getRandomEmptyTileAroundCoords(coords: Vector2):
+	var startX = coords.x - 1
+	var startY = coords.y - 1
+	var endX = coords.x + 1
+	var endY = coords.y + 1
+	
+	var possibleTiles: Array = []
+	for n in MAX_PLACING_TRIES:
+		for x in range(startX, endX):
+			for y in range(startY, endY):
+				if tiles.get_cell(x, y) <= TileIds.NOTHING and !isPortal(x, y):
+					possibleTiles.append(Vector2(x, y))
+
+		if possibleTiles.size() > 0:
+			return possibleTiles[GlobalsMain.rng.randi_range(0, possibleTiles.size() - 1)]
+		else:
+			startX -= 1
+			endX += 1
+			startY -= 1
+			endY += 1
+	
+	var freeSlot = findFirstFreeSlot()
+		
+	if (freeSlot != null):
+		return freeSlot
+	else:
+		ErrorHandler.criticalError("No free spawn point feasable for map. Tries: " + str(MAX_PLACING_TRIES) + " and emergency placing failed as well.")
+		return Vector2(0,0)
 	

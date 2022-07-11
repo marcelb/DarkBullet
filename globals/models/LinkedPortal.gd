@@ -13,7 +13,7 @@ func hasBeenUsed() -> bool:
 		return false
 	return  true
 
-func getTileMapPosition() -> Vector2:
+func getMapPosition() -> Vector2:
 	return position
 	
 func setDestinationPortal(a_linkedPortal):

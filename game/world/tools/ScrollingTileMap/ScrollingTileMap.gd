@@ -41,20 +41,26 @@ func setup(p_linkedRoom: LinkedRoom, p_player, p_camera):
 	_recalculateAndDrawScreenBoundaries(playerTilePosition)
 	lastPlayerTilePos = playerTilePosition
 
+func translateMapToWorld(arrayCoord:Vector2) -> Vector2:
+	return map_to_world(arrayCoord)
+	
+func translateWorldToMap(worldCoord:Vector2) -> Vector2:
+	return world_to_map(worldCoord)
+
 func translateMapToWorldWithOffset(arrayCoord:Vector2) -> Vector2:
-	return map_to_world(_translateFromArrayCoordsToTileMapCoords(arrayCoord))
+	return map_to_world(translateFromArrayCoordsToTileMapCoords(arrayCoord))
 	
 func translateWorldToMapWithOffset(worldCoord:Vector2) -> Vector2:
-	return _translateFromTileMapCoordToArrayCoords(world_to_map(worldCoord))
+	return translateFromArrayCoordsToTileMapCoords(world_to_map(worldCoord))
 
-func _translateFromArrayCoordsToTileMapCoords(pos:Vector2):
+func translateFromArrayCoordsToTileMapCoords(pos:Vector2):
 	return pos - worldOffsetVector
 
-func _translateFromTileMapCoordToArrayCoords(pos:Vector2):
+func translateFromTileMapCoordToArrayCoords(pos:Vector2):
 	return pos + worldOffsetVector
 
 func _setCellFromArrayData(cell: Vector2):
-	var arrayPos = _translateFromTileMapCoordToArrayCoords(cell)
+	var arrayPos = translateFromTileMapCoordToArrayCoords(cell)
 	var tileAtPos = linkedRoom.getTileAtPos(arrayPos)
 	if tileAtPos > TileIds.NOTHING:
 		set_cellv(cell, tileAtPos)

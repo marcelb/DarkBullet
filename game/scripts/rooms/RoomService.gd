@@ -29,7 +29,6 @@ func setup(a_world: Node, a_portalsNode: Node, a_scrollingTileMap: ScrollingTile
 
 func portal_entered_by_player(portal:Area2D, body:Node2D):
 	if body.name == Player.typeName:
-		print(str(portal) + " entered by " + str(body.get_class()) + " I'm " + str(self))
 		changeRoomsThroughPortal(portal.linkedPortal)
 		
 func changeRoomsThroughPortal(linkedPortal:LinkedPortal):
@@ -48,10 +47,9 @@ func setupNewRoom(newRoom:LinkedRoom, entryPortalInNewRoom: LinkedPortal = null)
 	scrollingTileMap.setup(newRoom, player, camera)
 	
 	if entryPortalInNewRoom != null:
-		var spawnPosition = entryPortalInNewRoom.getTileMapPosition() + Vector2(2,0)
-		print("spawn = " + str(spawnPosition))
-		var playerAbsoluteSpawnPosition = scrollingTileMap.translateMapToWorldWithOffset(spawnPosition)
-		print("spawn absolute = " + str(playerAbsoluteSpawnPosition))
+		var spawnTile = scrollingTileMap.translateFromArrayCoordsToTileMapCoords(entryPortalInNewRoom.getMapPosition())
+		var spawnPosition = newRoom.getRandomEmptyTileAroundCoords(spawnTile)
+		var playerAbsoluteSpawnPosition = scrollingTileMap.translateMapToWorld(spawnPosition)
 		player.global_position = playerAbsoluteSpawnPosition
 	else:
 		player.global_position = Vector2(0,0)
@@ -63,8 +61,7 @@ func setupNewRoom(newRoom:LinkedRoom, entryPortalInNewRoom: LinkedPortal = null)
 
 func addPortalsForRoom(room: LinkedRoom):
 	for portal in room.getPortals():
-		print("portal = " + str(portal.position))
-		var portalWorldPosition = scrollingTileMap.translateMapToWorldWithOffset(portal.getTileMapPosition())
+		var portalWorldPosition = scrollingTileMap.translateMapToWorldWithOffset(portal.getMapPosition())
 		portalWorldPosition += scrollingTileMap.cell_size / 2
 		var newPortal = Portal.instance()
 		newPortal.setup(portalWorldPosition, portal, self)
