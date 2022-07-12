@@ -50,6 +50,7 @@ func setupNewRoom(newRoom:LinkedRoom, entryPortalInNewRoom: LinkedPortal = null)
 		var spawnTile = scrollingTileMap.translateFromArrayCoordsToTileMapCoords(entryPortalInNewRoom.getMapPosition())
 		var spawnPosition = newRoom.getRandomEmptyTileAroundCoords(spawnTile)
 		var playerAbsoluteSpawnPosition = scrollingTileMap.translateMapToWorld(spawnPosition)
+		playerAbsoluteSpawnPosition += scrollingTileMap.cell_size / 2
 		player.global_position = playerAbsoluteSpawnPosition
 	else:
 		player.global_position = Vector2(0,0)

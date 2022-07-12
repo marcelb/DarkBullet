@@ -61,9 +61,13 @@ func translateFromTileMapCoordToArrayCoords(pos:Vector2):
 
 func _setCellFromArrayData(cell: Vector2):
 	var arrayPos = translateFromTileMapCoordToArrayCoords(cell)
-	var tileAtPos = linkedRoom.getTileAtPos(arrayPos)
+	var tileAtPos = linkedRoom.getTileAtPosv(arrayPos)
 	if tileAtPos > TileIds.NOTHING:
 		set_cellv(cell, tileAtPos)
+#		var newLabel = Label.new()
+#		newLabel.text = str(cell) + "\n" + str(arrayPos)
+#		newLabel.set_position(map_to_world(cell))
+#		add_child(newLabel)
 		
 func _removeCell(cell: Vector2):
 	if REMOVE_INVISIBLE_TILES:

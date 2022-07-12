@@ -39,8 +39,11 @@ func isPortalv(pos: Vector2) -> bool:
 func hasTileAtPos(pos: Vector2) -> bool:
 	return tiles.has_cellv(pos)
 
-func getTileAtPos(pos: Vector2) -> int:
-	var cell = tiles.get_cellv(pos)
+func getTileAtPosv(pos: Vector2) -> int:
+	return getTileAtPos(pos.x, pos.y)
+
+func getTileAtPos(x:int, y:int) -> int:
+	var cell = tiles.get_cell(x, y)
 	return cell if cell != null else TileIds.NOTHING
 
 func generate(entryPortal: LinkedPortal) -> void:
@@ -108,7 +111,6 @@ func findFirstFreeSlot():
 				return newPortalLocation
 	return null
 	
-# TODO this is broken shit:
 func getRandomEmptyTileAroundCoords(coords: Vector2):
 	var startX = coords.x - 1
 	var startY = coords.y - 1
@@ -117,13 +119,15 @@ func getRandomEmptyTileAroundCoords(coords: Vector2):
 	
 	var possibleTiles: Array = []
 	for n in MAX_PLACING_TRIES:
-		for x in range(startX, endX):
-			for y in range(startY, endY):
-				if tiles.get_cell(x, y) <= TileIds.NOTHING and !isPortal(x, y):
+		for x in range(startX, endX+1):
+			for y in range(startY, endY+1):
+				if getTileAtPos(x, y) <= TileIds.NOTHING && !isPortal(x, y):
 					possibleTiles.append(Vector2(x, y))
 
 		if possibleTiles.size() > 0:
-			return possibleTiles[GlobalsMain.rng.randi_range(0, possibleTiles.size() - 1)]
+			var lol = 1
+			var randomIndex = GlobalsMain.rng.randi_range(0, possibleTiles.size() - 1)
+			return possibleTiles[randomIndex]
 		else:
 			startX -= 1
 			endX += 1
