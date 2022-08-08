@@ -52,7 +52,7 @@ func generate(entryPortal: LinkedPortal) -> void:
 		
 		generateBorder()
 		generateRoomInside()
-		generatePortals(MINIMUM_PORTALS, entryPortal)
+		generatePortals(entryPortal)
 		
 		isInitialized = true
 		print("Room generating time: ", OS.get_ticks_msec() - time_start)
@@ -70,14 +70,35 @@ func generateRoomInside():
 	for x in width-2:
 		for y in height-2:
 			tiles.set_cell(x+1, y+1, clamp(GlobalsMain.rng.randi_range(-160, 3), -1, 1)) 
-			
-func generatePortals(minimumPortals:int, entryPortal: LinkedPortal):
-	# TODO possible bugs: Portal on Player Position
-	var amountOfPortals = GlobalsMain.rng.randi_range(minimumPortals, clamp(minimumPortals+3, 0, GlobalsMain.PORTALS_MAX))
+
+enum PortalLocations {
+	NORTH,
+	EAST,
+	SOUTH,
+	WEST
+}
+
+func getDesiredPortalLocation(usedPortalLocations:Array):
+	var remainingPortalLocations = PortalLocations.keys()
+	GlobalsMain.removeFromArray(remainingPortalLocations, usedPortalLocations)
+	
+	if (remainingPortalLocations.size() > 0): # fill all sides
+		var portalLocationKey = GlobalsMain.rng.randi_range(0, remainingPortalLocations.size() - 1)
+		var chosenKey = remainingPortalLocations[portalLocationKey]
+		return chosenKey
+	else: # if all sides filled just add a new portal anywhere
+		var portalLocationKey = GlobalsMain.rng.randi_range(0, PortalLocations.size() - 1)
+		return PortalLocations.keys()[portalLocationKey]
+		
+func generatePortals(entryPortal: LinkedPortal):
+	var usedPortalLocations: Array = [] # PortalLocations
+	var amountOfPortals = 4 #GlobalsMain.rng.randi_range(0, GlobalsMain.PORTALS_MAX)
 	
 	if(amountOfPortals > 0):
 		for n in amountOfPortals:
-			var newPortalLocation = getValidPortalPosition()
+			var desiredPortalLocation = getDesiredPortalLocation(usedPortalLocations)
+			usedPortalLocations.append(desiredPortalLocation)
+			var newPortalLocation = getValidPortalPosition(PortalLocations[desiredPortalLocation])
 			var newPortal = LinkedPortal.new(self, newPortalLocation)
 			portals.append(newPortal)
 		
@@ -87,17 +108,32 @@ func generatePortals(minimumPortals:int, entryPortal: LinkedPortal):
 			entryPortal.setDestinationPortal(portals[0])
 			
 
-func getValidPortalPosition() -> Vector2:
-	var newPortalLocation = GlobalsMain.getRandomVector2(1, width-2, 1, height-2)
+func randomEdgePortalForDesiredLocation(desiredLocation):
+	match desiredLocation:
+		PortalLocations.NORTH:
+			return GlobalsMain.getRandomVector2(1, width-2, 0, 0)
+		PortalLocations.EAST:
+			return GlobalsMain.getRandomVector2(width-1, width-1, 1, height-2)
+		PortalLocations.SOUTH:
+			return GlobalsMain.getRandomVector2(1, width-2, height-1, height-1)
+		PortalLocations.WEST:
+			return GlobalsMain.getRandomVector2(0, 0, 1, height-2)
+		_:
+			print("desiredLocation is not a valid PortalLocations key: " + desiredLocation)
+			return GlobalsMain.getRandomVector2(2, width-2, 0, 0)
+
+func getValidPortalPosition(desiredLocation) -> Vector2:
+	var newPortalLocation = randomEdgePortalForDesiredLocation(desiredLocation)
 	var tries = 1
 	
-	while(tries < MAX_PLACING_TRIES && (tiles.get_cellv(newPortalLocation) > TileIds.NOTHING or isPortalv(newPortalLocation))):
-		newPortalLocation = GlobalsMain.getRandomVector2(1, width-2, 1, height-2)
+	while(tries < MAX_PLACING_TRIES && isPortalv(newPortalLocation)):
+		newPortalLocation = randomEdgePortalForDesiredLocation(desiredLocation)
 		tries += 1
 		if (tries >= MAX_PLACING_TRIES):	
-			newPortalLocation = findFirstFreeSlot()
+			newPortalLocation = findFirstFreeSlot() # should never happen
 		
 	if (newPortalLocation != null):
+		tiles.set_cellv(newPortalLocation, TileIds.NOTHING)
 		return newPortalLocation
 	else:
 		ErrorHandler.criticalError("No Portal location feasable for map. Tries: " + str(tries) + " and emergency placing failed as well.")
